@@ -1,7 +1,7 @@
 package io.getarrays.userservice.security;
 
-import io.getarrays.userservice.filter.CustomAuthorizationFilter;
 import io.getarrays.userservice.filter.MyAuthenticationFilter;
+import io.getarrays.userservice.filter.MyAuthorizationFilter;
 import io.getarrays.userservice.service.RateLimiterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    // Spring akan otomatis mengambil UserServiceImpl-mu karena ada @Service
+    // Spring akan otomatis mengambil UserServiceImpl karena ada @Service
     private final UserDetailsService userDetailsService;
     // Spring akan mengambil Bean dari Application Class di atas
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -45,18 +45,18 @@ public class SecurityConfig {
         // set URL login di sini agar tidak default /login
         customFilter.setFilterProcessesUrl("/api/login");
 
-        http.csrf(AbstractHttpConfigurer::disable); // http.csrf().disable()
+        http.csrf(AbstractHttpConfigurer::disable); // pengganti http.csrf().disable()
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login/**", "/api/token/refresh/**").permitAll() // Sesuai baris 4 di gambar
-                .requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER") // Sesuai baris 5
-                .requestMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN") // Sesuai baris 6
-                .anyRequest().authenticated() // Sesuai baris 7
+                .requestMatchers("/api/login/**", "/api/token/refresh/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN")
+                .anyRequest().authenticated()
         );
 
         // Tambahkan filter kustom ke dalam barisan filter
         http.addFilter(customFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(rateLimiterService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new MyAuthorizationFilter(rateLimiterService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

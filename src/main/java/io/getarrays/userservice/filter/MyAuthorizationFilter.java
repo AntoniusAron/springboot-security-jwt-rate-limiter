@@ -34,12 +34,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * @since 21/01/2026
  */
 @Slf4j
-public class CustomAuthorizationFilter extends OncePerRequestFilter {
+public class MyAuthorizationFilter extends OncePerRequestFilter {
     // RateLimiterService
     private final RateLimiterService rateLimiterService;
 
     // RateLimiterService di-inject
-    public CustomAuthorizationFilter(RateLimiterService rateLimiterService) {
+    public MyAuthorizationFilter(RateLimiterService rateLimiterService) {
         this.rateLimiterService = rateLimiterService;
     }
 
